@@ -8,7 +8,13 @@ When you ask Claude things like *"generate a watercolor of a fox"*, *"make a fav
 
 ```bash
 git clone https://github.com/batou9150/nanobanana-skill ~/.claude/skills/nanobanana
-python3 -m pip install -r ~/.claude/skills/nanobanana/requirements.txt
+
+# Create an isolated venv for the skill (avoids PEP 668 / Homebrew conflicts).
+# Requires `uv` (https://docs.astral.sh/uv/) — or replace with `python3 -m venv` + pip.
+uv venv ~/.claude/skills/nanobanana/.venv
+uv pip install --python ~/.claude/skills/nanobanana/.venv/bin/python \
+  -r ~/.claude/skills/nanobanana/requirements.txt
+
 export NANOBANANA_API_KEY=...   # https://aistudio.google.com/apikey
 ```
 
@@ -29,7 +35,7 @@ Restart Claude Code (or reload skills) and ask Claude to generate something.
 Run any subcommand with `--help` to see flags:
 
 ```bash
-python3 ~/.claude/skills/nanobanana/scripts/nanobanana.py generate --help
+~/.claude/skills/nanobanana/.venv/bin/python ~/.claude/skills/nanobanana/scripts/nanobanana.py generate --help
 ```
 
 ## Direct CLI use (without Claude)
@@ -37,7 +43,7 @@ python3 ~/.claude/skills/nanobanana/scripts/nanobanana.py generate --help
 The CLI works standalone:
 
 ```bash
-python3 ~/.claude/skills/nanobanana/scripts/nanobanana.py generate \
+~/.claude/skills/nanobanana/.venv/bin/python ~/.claude/skills/nanobanana/scripts/nanobanana.py generate \
   "sunset over mountains" --count=3 --styles=watercolor,oil-painting
 ```
 
