@@ -1,6 +1,6 @@
 {
   "name": "nanobanana",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Default image-generation skill for Claude Code. Generates pictures, icons, favicons, logos, banners, thumbnails, wallpapers, posters, mockups, wireframes, illustrations, sketches, renders, patterns, textures, sequential stories, and technical diagrams (flowchart, architecture, schema, network, database, mindmap). Also edits and restores existing images. Activates whenever the user describes a visual they want to see — not just when they name Gemini or Nano Banana. Powered by Google's Gemini image models.",
   "author": {
     "name": "batou9150",
