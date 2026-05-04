@@ -10,10 +10,10 @@ Image generation, editing, and restoration via Google's Gemini image models. Def
 
 ## Prerequisites
 
-1. `python3 -m pip install -r ~/.claude/skills/nanobanana/requirements.txt` (one-time; installs `google-genai`)
-2. `NANOBANANA_API_KEY` env var set (fallbacks: see `references/troubleshooting.md`)
+1. Skill venv exists at `~/.claude/skills/nanobanana/.venv/` with `google-genai` installed (one-time; see install instructions in the skill's README).
+2. `NANOBANANA_API_KEY` env var set (fallbacks: see `references/troubleshooting.md`).
 
-If neither is satisfied, tell the user exactly what to run and stop.
+If either is missing, tell the user exactly what to run and stop.
 
 ## Choosing a subcommand
 
@@ -34,7 +34,7 @@ When the user's request matches a specialized intent (icon / pattern / story / d
 Always invoke via Bash:
 
 ```bash
-python3 ~/.claude/skills/nanobanana/scripts/nanobanana.py <subcommand> [args] [flags]
+~/.claude/skills/nanobanana/.venv/bin/python ~/.claude/skills/nanobanana/scripts/nanobanana.py <subcommand> [args] [flags]
 ```
 
 Output is saved to `./nanobanana-output/` in the user's cwd. The CLI prints absolute paths to stdout — relay these back to the user.
@@ -58,23 +58,23 @@ Load on demand (don't dump unprompted):
 
 ```bash
 # 4 watercolor + sketch variations of the same scene
-python3 ~/.claude/skills/nanobanana/scripts/nanobanana.py generate \
+~/.claude/skills/nanobanana/.venv/bin/python ~/.claude/skills/nanobanana/scripts/nanobanana.py generate \
   "mountain landscape" --styles=watercolor,sketch --count=4
 
 # Edit an image already in the user's cwd
-python3 ~/.claude/skills/nanobanana/scripts/nanobanana.py edit \
+~/.claude/skills/nanobanana/.venv/bin/python ~/.claude/skills/nanobanana/scripts/nanobanana.py edit \
   photo.png "add sunglasses to the person"
 
 # Favicon set
-python3 ~/.claude/skills/nanobanana/scripts/nanobanana.py icon \
+~/.claude/skills/nanobanana/.venv/bin/python ~/.claude/skills/nanobanana/scripts/nanobanana.py icon \
   "mountain logo" --type=favicon --sizes=16,32,64
 
 # Architecture diagram
-python3 ~/.claude/skills/nanobanana/scripts/nanobanana.py diagram \
+~/.claude/skills/nanobanana/.venv/bin/python ~/.claude/skills/nanobanana/scripts/nanobanana.py diagram \
   "microservices chat app" --type=architecture --complexity=detailed
 
 # 5-step process story with auto-preview
-python3 ~/.claude/skills/nanobanana/scripts/nanobanana.py story \
+~/.claude/skills/nanobanana/.venv/bin/python ~/.claude/skills/nanobanana/scripts/nanobanana.py story \
   "seed growing into a tree" --steps=5 --type=process --preview
 ```
 
