@@ -14,11 +14,45 @@ git clone https://github.com/batou9150/nanobanana-skill ~/.claude/skills/nanoban
 uv venv ~/.claude/skills/nanobanana/.venv
 uv pip install --python ~/.claude/skills/nanobanana/.venv/bin/python \
   -r ~/.claude/skills/nanobanana/requirements.txt
-
-export NANOBANANA_API_KEY=...   # https://aistudio.google.com/apikey
 ```
 
-Restart Claude Code (or reload skills) and ask Claude to generate something.
+Then **set the API key** (see next section), and restart Claude Code (or reload skills).
+
+## API key — where to put it
+
+Get a key from <https://aistudio.google.com/apikey>, then choose **one** of:
+
+### Option A — `~/.zshenv` (recommended for zsh users)
+
+```bash
+echo 'export NANOBANANA_API_KEY="<your-key>"' >> ~/.zshenv
+```
+
+`~/.zshenv` loads for **every** zsh invocation, including the non-interactive shells Claude Code's Bash tool uses. Putting it in `~/.zshrc` only works for interactive terminals — Claude Code won't see it.
+
+(Bash users: use `~/.bash_profile` or whichever rc your shell sources for non-interactive runs.)
+
+### Option B — Claude Code settings only
+
+Add to `~/.claude/settings.json`:
+
+```json
+{
+  "env": { "NANOBANANA_API_KEY": "<your-key>" }
+}
+```
+
+Stored in plain text on disk; only visible to Claude Code processes (not to standalone CLI use).
+
+### Fallback env-var names
+
+If you already have a Gemini key set under another name, the skill picks the first that's defined, in this order:
+
+1. `NANOBANANA_API_KEY` (preferred)
+2. `NANOBANANA_GEMINI_API_KEY`
+3. `NANOBANANA_GOOGLE_API_KEY`
+4. `GEMINI_API_KEY`
+5. `GOOGLE_API_KEY`
 
 ## Subcommands
 
