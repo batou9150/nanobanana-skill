@@ -39,6 +39,15 @@ The script is executable. Invoke directly via Bash, using the absolute path unde
 
 Output is saved to `./nanobanana-output/` in the user's cwd. The CLI prints the saved file paths to stdout — relay those back to the user.
 
+## Aspect ratio & resolution
+
+Every subcommand accepts `--aspect-ratio` and `--resolution`. Defaults are `16:9` and `2K`. Override whenever the user signals a different shape ("portrait", "square", "wallpaper", "9:16") or quality target ("4K", "low-res").
+
+- `--aspect-ratio` (default `16:9`): `1:1`, `1:4`, `1:8`, `2:3`, `3:2`, `3:4`, `4:1`, `4:3`, `4:5`, `5:4`, `8:1`, `9:16`, `16:9`, `21:9`
+- `--resolution` (default `2K`): `512`, `1K`, `2K`, `4K`
+
+Example: `generate "city skyline at night" --aspect-ratio=21:9 --resolution=4K`.
+
 ## Strict requirements
 
 - **Counts are exact**: when the user says `--count=N` (or "5 variations"), produce exactly N images.
