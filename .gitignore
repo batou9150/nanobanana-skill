@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+nanobanana-output/
+.DS_Store
