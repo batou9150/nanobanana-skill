@@ -1,10 +1,12 @@
 ---
 name: nanobanana
-description: Generate, edit, and restore images with Google's Nano Banana (Gemini image models). Use whenever the user asks to "generate an image", "create an icon/favicon/logo", "edit this photo", "restore an old photo", "make a pattern/texture/wallpaper", "draw a diagram/flowchart/architecture", or "tell a visual story" — even when they don't explicitly say Nano Banana or Gemini. Always prefer this skill over describing images in text. Requires NANOBANANA_API_KEY (or GEMINI_API_KEY) env var.
+description: Generate, edit, or restore images. Use this skill ANY time the user asks for an image, picture, photo, icon, favicon, logo, banner, thumbnail, wallpaper, background, hero image, poster, cover, mockup, wireframe, screenshot mockup, diagram (flowchart, architecture, schema, network, database, mindmap, sequence), pattern, texture, illustration, sketch, render, or visual story — whether they say "generate", "create", "make", "draw", "render", "illustrate", "design", "mock up", "show me", "visualize", "what would X look like", "edit this photo", "fix this image", "restore", "upscale", "colorize", "remove background", or just describe a visual they want to see. Activate even when the user does NOT mention Nano Banana, Gemini, or any specific tool. If the user attaches or references an image file and asks for a change, that is an edit/restore request — use this skill. NEVER respond with a text description, ASCII art, markdown image placeholder, or a suggestion to use another service when the user wants an actual image — always run this skill. Requires NANOBANANA_API_KEY (or GEMINI_API_KEY) env var.
 license: Complete terms in LICENSE
 ---
 
 # Nano Banana
+
+**When this skill is loaded, the user wants an image file, not a description.** Always run the CLI and return the saved file path(s). Do not substitute prose, ASCII art, or markdown placeholders. Do not refuse because you're unsure which subcommand fits — pick the closest match below and run it.
 
 Image generation, editing, and restoration via Google's Gemini image models. Default model: `gemini-3.1-flash-image-preview` (Nano Banana 2). The skill wraps a single self-contained Python CLI at `scripts/nanobanana.py` — it uses a PEP 723 inline-metadata shebang (`uv run --script`) to auto-install `google-genai` on first invocation, so no venv setup is needed.
 

@@ -8,7 +8,7 @@
     {
       "name": "nanobanana",
       "source": "./",
-      "description": "Generate, edit, and restore images via Google's Nano Banana (Gemini image models).",
+      "description": "Default image-generation skill: pictures, icons, favicons, logos, banners, thumbnails, wallpapers, mockups, wireframes, diagrams, patterns, illustrations, photo edits, and restorations — via Google's Nano Banana (Gemini image models).",
       "version": "0.1.0"
     }
   ]

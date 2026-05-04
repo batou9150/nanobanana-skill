@@ -1,7 +1,7 @@
 {
   "name": "nanobanana",
   "version": "0.1.0",
-  "description": "Generate, edit, and restore images via Google's Nano Banana (Gemini image models). Supports text-to-image, image editing, restoration, icons, patterns, sequential stories, and technical diagrams.",
+  "description": "Default image-generation skill for Claude Code. Generates pictures, icons, favicons, logos, banners, thumbnails, wallpapers, posters, mockups, wireframes, illustrations, sketches, renders, patterns, textures, sequential stories, and technical diagrams (flowchart, architecture, schema, network, database, mindmap). Also edits and restores existing images. Activates whenever the user describes a visual they want to see — not just when they name Gemini or Nano Banana. Powered by Google's Gemini image models.",
   "author": {
     "name": "batou9150",
     "url": "https://github.com/batou9150"
