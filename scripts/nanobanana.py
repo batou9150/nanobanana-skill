@@ -41,6 +41,12 @@ SEARCH_DIRS = [
     Path.home() / "Downloads",
     Path.home() / "Desktop",
 ]
+ASPECT_RATIOS = (
+    "1:1", "1:4", "1:8", "2:3", "3:2", "3:4", "4:1", "4:3",
+    "4:5", "5:4", "8:1", "9:16", "16:9", "21:9",
+)
+RESOLUTIONS = ("512", "1K", "2K", "4K")
+
 VARIATION_SUFFIXES = {
     "lighting": ["dramatic lighting", "soft lighting"],
     "angle": ["from above", "close-up view"],
@@ -159,14 +165,31 @@ def save_image(data: bytes, base: str, ext: str = "png") -> Path:
     return path
 
 
-def call_model(client: genai.Client, prompt: str, image_path: Path | None = None):
+def build_image_config(args) -> types.GenerateContentConfig | None:
+    aspect = getattr(args, "aspect_ratio", None)
+    resolution = getattr(args, "resolution", None)
+    if not aspect and not resolution:
+        return None
+    return types.GenerateContentConfig(
+        image_config=types.ImageConfig(aspect_ratio=aspect, image_size=resolution)
+    )
+
+
+def call_model(
+    client: genai.Client,
+    prompt: str,
+    image_path: Path | None = None,
+    config: types.GenerateContentConfig | None = None,
+):
     contents: list = [prompt]
     if image_path:
         mime = "image/png" if image_path.suffix.lower() == ".png" else "image/jpeg"
         contents.append(
             types.Part.from_bytes(data=image_path.read_bytes(), mime_type=mime)
         )
-    return client.models.generate_content(model=model_name(), contents=contents)
+    return client.models.generate_content(
+        model=model_name(), contents=contents, config=config
+    )
 
 
 def build_batch_prompts(prompt: str, count: int, styles, variations) -> list[str]:
@@ -192,11 +215,12 @@ def build_batch_prompts(prompt: str, count: int, styles, variations) -> list[str
 def cmd_generate(args):
     client = get_client()
     prompts = build_batch_prompts(args.prompt, args.count, args.styles, args.variations)
+    config = build_image_config(args)
     print(f"-> generating {len(prompts)} image(s) with {model_name()}", file=sys.stderr)
     saved: list[Path] = []
     for i, p in enumerate(prompts, 1):
         try:
-            response = call_model(client, p)
+            response = call_model(client, p, config=config)
         except Exception as e:
             print(f"  [{i}/{len(prompts)}] FAIL: {e}", file=sys.stderr)
             continue
@@ -217,8 +241,9 @@ def cmd_generate(args):
 def _edit_or_restore(args, mode: str):
     client = get_client()
     src = find_input(args.file)
+    config = build_image_config(args)
     print(f"-> {mode} {src} with {model_name()}", file=sys.stderr)
-    response = call_model(client, args.prompt, src)
+    response = call_model(client, args.prompt, src, config=config)
     images = extract_images(response)
     if not images:
         raise SystemExit("ERROR: no image data in response")
@@ -251,12 +276,13 @@ def cmd_icon(args):
     client = get_client()
     base_prompt = build_icon_prompt(args)
     sizes = args.sizes or [256]
+    config = build_image_config(args)
     saved: list[Path] = []
     print(f"-> icon: {base_prompt} | sizes={sizes}", file=sys.stderr)
     for size in sizes:
         sized = f"{base_prompt}, {size}x{size}px"
         try:
-            response = call_model(client, sized)
+            response = call_model(client, sized, config=config)
         except Exception as e:
             print(f"  size {size}: FAIL: {e}", file=sys.stderr)
             continue
@@ -292,8 +318,9 @@ def build_pattern_prompt(args) -> str:
 def cmd_pattern(args):
     client = get_client()
     prompt = build_pattern_prompt(args)
+    config = build_image_config(args)
     print(f"-> pattern: {prompt}", file=sys.stderr)
-    response = call_model(client, prompt)
+    response = call_model(client, prompt, config=config)
     images = extract_images(response)
     if not images:
         raise SystemExit("ERROR: no pattern generated")
@@ -313,13 +340,14 @@ def cmd_story(args):
         "timeline": "chronological progression, timeline visualization",
     }[args.type]
     saved: list[Path] = []
+    config = build_image_config(args)
     print(f"-> story: {args.steps} step(s), type={args.type}", file=sys.stderr)
     for i in range(1, args.steps + 1):
         step_prompt = f"{args.prompt}, step {i} of {args.steps}, {type_suffix}"
         if i > 1:
             step_prompt += f", {args.transition} transition from previous step"
         try:
-            response = call_model(client, step_prompt)
+            response = call_model(client, step_prompt, config=config)
         except Exception as e:
             print(f"  step {i}: FAIL: {e}", file=sys.stderr)
             continue
@@ -354,8 +382,9 @@ def build_diagram_prompt(args) -> str:
 def cmd_diagram(args):
     client = get_client()
     prompt = build_diagram_prompt(args)
+    config = build_image_config(args)
     print(f"-> diagram: {prompt}", file=sys.stderr)
-    response = call_model(client, prompt)
+    response = call_model(client, prompt, config=config)
     images = extract_images(response)
     if not images:
         raise SystemExit("ERROR: no diagram generated")
@@ -374,6 +403,21 @@ def csv_int(value: str) -> list[int]:
     return [int(v) for v in csv_str(value)]
 
 
+def add_image_config_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--aspect-ratio",
+        choices=ASPECT_RATIOS,
+        default="16:9",
+        help="Output aspect ratio (default: 16:9).",
+    )
+    parser.add_argument(
+        "--resolution",
+        choices=RESOLUTIONS,
+        default="2K",
+        help="Output resolution: 512, 1K, 2K, 4K (default: 2K).",
+    )
+
+
 def main():
     p = argparse.ArgumentParser(prog="nanobanana", description="Gemini image-generation CLI.")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -385,18 +429,21 @@ def main():
     g.add_argument("--variations", type=csv_str, help="Comma-separated: lighting,angle,color-palette,composition,mood,season,time-of-day")
     g.add_argument("--seed", type=int)
     g.add_argument("--preview", action="store_true")
+    add_image_config_args(g)
     g.set_defaults(func=cmd_generate)
 
     e = sub.add_parser("edit", help="Edit existing image")
     e.add_argument("file")
     e.add_argument("prompt")
     e.add_argument("--preview", action="store_true")
+    add_image_config_args(e)
     e.set_defaults(func=cmd_edit)
 
     r = sub.add_parser("restore", help="Restore / enhance image")
     r.add_argument("file")
     r.add_argument("prompt")
     r.add_argument("--preview", action="store_true")
+    add_image_config_args(r)
     r.set_defaults(func=cmd_restore)
 
     ic = sub.add_parser("icon", help="App icon, favicon, UI element")
@@ -408,6 +455,7 @@ def main():
     ic.add_argument("--background", default="transparent")
     ic.add_argument("--corners", choices=["rounded", "sharp"], default="rounded")
     ic.add_argument("--preview", action="store_true")
+    add_image_config_args(ic)
     ic.set_defaults(func=cmd_icon)
 
     pa = sub.add_parser("pattern", help="Seamless pattern / texture")
@@ -419,6 +467,7 @@ def main():
     pa.add_argument("--colors", choices=["mono", "duotone", "colorful"], default="colorful")
     pa.add_argument("--repeat", choices=["tile", "mirror"], default="tile")
     pa.add_argument("--preview", action="store_true")
+    add_image_config_args(pa)
     pa.set_defaults(func=cmd_pattern)
 
     st = sub.add_parser("story", help="Sequential image story / process / tutorial / timeline")
@@ -428,6 +477,7 @@ def main():
     st.add_argument("--style", choices=["consistent", "evolving"], default="consistent")
     st.add_argument("--transition", choices=["smooth", "dramatic", "fade"], default="smooth")
     st.add_argument("--preview", action="store_true")
+    add_image_config_args(st)
     st.set_defaults(func=cmd_story)
 
     di = sub.add_parser("diagram", help="Flowchart / architecture / network / database / wireframe / mindmap / sequence")
@@ -439,6 +489,7 @@ def main():
     di.add_argument("--colors", choices=["mono", "accent", "categorical"], default="accent")
     di.add_argument("--annotations", choices=["minimal", "detailed"], default="detailed")
     di.add_argument("--preview", action="store_true")
+    add_image_config_args(di)
     di.set_defaults(func=cmd_diagram)
 
     args = p.parse_args()
