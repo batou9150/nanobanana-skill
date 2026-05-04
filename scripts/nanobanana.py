@@ -112,8 +112,18 @@ def open_preview(path: Path) -> None:
         print(f"  preview failed: {e}", file=sys.stderr)
 
 
-def extract_images(response) -> list[bytes]:
-    out: list[bytes] = []
+MIME_TO_EXT = {
+    "image/png": "png",
+    "image/jpeg": "jpg",
+    "image/jpg": "jpg",
+    "image/webp": "webp",
+    "image/gif": "gif",
+}
+
+
+def extract_images(response) -> list[tuple[bytes, str]]:
+    """Return list of (raw_bytes, file_extension) tuples."""
+    out: list[tuple[bytes, str]] = []
     parts = getattr(response, "parts", None)
     if not parts and getattr(response, "candidates", None):
         content = response.candidates[0].content
@@ -123,13 +133,15 @@ def extract_images(response) -> list[bytes]:
         data = getattr(inline, "data", None) if inline else None
         if not data:
             continue
+        mime = (getattr(inline, "mime_type", None) or "image/png").lower()
+        ext = MIME_TO_EXT.get(mime, "png")
         if isinstance(data, str):
             try:
-                out.append(base64.b64decode(data))
+                out.append((base64.b64decode(data), ext))
             except Exception:
                 continue
         else:
-            out.append(bytes(data))
+            out.append((bytes(data), ext))
     return out
 
 
@@ -180,8 +192,8 @@ def cmd_generate(args):
         except Exception as e:
             print(f"  [{i}/{len(prompts)}] FAIL: {e}", file=sys.stderr)
             continue
-        for data in extract_images(response):
-            path = save_image(data, p)
+        for data, ext in extract_images(response):
+            path = save_image(data, p, ext)
             saved.append(path)
             print(f"  [{i}/{len(prompts)}] {path}", file=sys.stderr)
             break
@@ -202,7 +214,8 @@ def _edit_or_restore(args, mode: str):
     images = extract_images(response)
     if not images:
         raise SystemExit("ERROR: no image data in response")
-    path = save_image(images[0], f"{mode}_{args.prompt}")
+    data, ext = images[0]
+    path = save_image(data, f"{mode}_{args.prompt}", ext)
     if args.preview:
         open_preview(path)
     print(path)
@@ -239,8 +252,9 @@ def cmd_icon(args):
         except Exception as e:
             print(f"  size {size}: FAIL: {e}", file=sys.stderr)
             continue
-        for data in extract_images(response):
-            ext = "jpg" if args.format == "jpeg" else "png"
+        for data, detected_ext in extract_images(response):
+            # Honor user --format override; otherwise use detected mime
+            ext = "jpg" if args.format == "jpeg" else detected_ext
             path = save_image(data, f"{args.prompt}_{size}", ext)
             saved.append(path)
             print(f"  {path}", file=sys.stderr)
@@ -275,7 +289,8 @@ def cmd_pattern(args):
     images = extract_images(response)
     if not images:
         raise SystemExit("ERROR: no pattern generated")
-    path = save_image(images[0], args.prompt)
+    data, ext = images[0]
+    path = save_image(data, args.prompt, ext)
     if args.preview:
         open_preview(path)
     print(path)
@@ -300,8 +315,8 @@ def cmd_story(args):
         except Exception as e:
             print(f"  step {i}: FAIL: {e}", file=sys.stderr)
             continue
-        for data in extract_images(response):
-            path = save_image(data, f"{args.type}_step{i}_{args.prompt}")
+        for data, ext in extract_images(response):
+            path = save_image(data, f"{args.type}_step{i}_{args.prompt}", ext)
             saved.append(path)
             print(f"  step {i}: {path}", file=sys.stderr)
             break
@@ -336,7 +351,8 @@ def cmd_diagram(args):
     images = extract_images(response)
     if not images:
         raise SystemExit("ERROR: no diagram generated")
-    path = save_image(images[0], args.prompt)
+    data, ext = images[0]
+    path = save_image(data, args.prompt, ext)
     if args.preview:
         open_preview(path)
     print(path)
