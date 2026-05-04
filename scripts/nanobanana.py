@@ -1,7 +1,15 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script --quiet
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["google-genai>=1.0.0"]
+# ///
 """nanobanana: Gemini image-generation CLI for the Claude Agent Skill.
 
 Subcommands: generate | edit | restore | icon | pattern | story | diagram
+
+Self-contained via PEP 723 inline metadata: `uv run` reads the header above
+and provisions a cached ephemeral environment with `google-genai` on first
+invocation. No manual venv / pip install required.
 """
 from __future__ import annotations
 

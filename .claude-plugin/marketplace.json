@@ -1,0 +1,15 @@
+{
+  "name": "batou9150-skills",
+  "owner": {
+    "name": "batou9150",
+    "url": "https://github.com/batou9150"
+  },
+  "plugins": [
+    {
+      "name": "nanobanana",
+      "source": "./",
+      "description": "Generate, edit, and restore images via Google's Nano Banana (Gemini image models).",
+      "version": "0.1.0"
+    }
+  ]
+}
