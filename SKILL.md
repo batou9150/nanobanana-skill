@@ -6,11 +6,11 @@ license: Complete terms in LICENSE
 
 # Nano Banana
 
-Image generation, editing, and restoration via Google's Gemini image models. Default model: `gemini-3.1-flash-image-preview` (Nano Banana 2). The skill wraps a Python CLI at `scripts/nanobanana.py`.
+Image generation, editing, and restoration via Google's Gemini image models. Default model: `gemini-3.1-flash-image-preview` (Nano Banana 2). The skill wraps a single self-contained Python CLI at `scripts/nanobanana.py` — it uses a PEP 723 inline-metadata shebang (`uv run --script`) to auto-install `google-genai` on first invocation, so no venv setup is needed.
 
 ## Prerequisites
 
-1. Skill venv exists at `~/.claude/skills/nanobanana/.venv/` with `google-genai` installed (one-time; see install instructions in the skill's README).
+1. `uv` on PATH (<https://docs.astral.sh/uv/>). The script bootstraps its own dependencies via `uv run --script`.
 2. `NANOBANANA_API_KEY` env var set (fallbacks: see `references/troubleshooting.md`).
 
 If either is missing, tell the user exactly what to run and stop.
@@ -31,13 +31,13 @@ When the user's request matches a specialized intent (icon / pattern / story / d
 
 ## Invocation
 
-Always invoke via Bash:
+The script is executable. Invoke directly via Bash, using the absolute path under this skill's base directory:
 
 ```bash
-~/.claude/skills/nanobanana/.venv/bin/python ~/.claude/skills/nanobanana/scripts/nanobanana.py <subcommand> [args] [flags]
+<skill-base-dir>/scripts/nanobanana.py <subcommand> [args] [flags]
 ```
 
-Output is saved to `./nanobanana-output/` in the user's cwd. The CLI prints absolute paths to stdout — relay these back to the user.
+Output is saved to `./nanobanana-output/` in the user's cwd. The CLI prints the saved file paths to stdout — relay those back to the user.
 
 ## Strict requirements
 
@@ -58,23 +58,23 @@ Load on demand (don't dump unprompted):
 
 ```bash
 # 4 watercolor + sketch variations of the same scene
-~/.claude/skills/nanobanana/.venv/bin/python ~/.claude/skills/nanobanana/scripts/nanobanana.py generate \
+<skill-base-dir>/scripts/nanobanana.py generate \
   "mountain landscape" --styles=watercolor,sketch --count=4
 
 # Edit an image already in the user's cwd
-~/.claude/skills/nanobanana/.venv/bin/python ~/.claude/skills/nanobanana/scripts/nanobanana.py edit \
+<skill-base-dir>/scripts/nanobanana.py edit \
   photo.png "add sunglasses to the person"
 
 # Favicon set
-~/.claude/skills/nanobanana/.venv/bin/python ~/.claude/skills/nanobanana/scripts/nanobanana.py icon \
+<skill-base-dir>/scripts/nanobanana.py icon \
   "mountain logo" --type=favicon --sizes=16,32,64
 
 # Architecture diagram
-~/.claude/skills/nanobanana/.venv/bin/python ~/.claude/skills/nanobanana/scripts/nanobanana.py diagram \
+<skill-base-dir>/scripts/nanobanana.py diagram \
   "microservices chat app" --type=architecture --complexity=detailed
 
 # 5-step process story with auto-preview
-~/.claude/skills/nanobanana/.venv/bin/python ~/.claude/skills/nanobanana/scripts/nanobanana.py story \
+<skill-base-dir>/scripts/nanobanana.py story \
   "seed growing into a tree" --steps=5 --type=process --preview
 ```
 

@@ -1,0 +1,13 @@
+{
+  "name": "nanobanana",
+  "version": "0.1.0",
+  "description": "Generate, edit, and restore images via Google's Nano Banana (Gemini image models). Supports text-to-image, image editing, restoration, icons, patterns, sequential stories, and technical diagrams.",
+  "author": {
+    "name": "batou9150",
+    "url": "https://github.com/batou9150"
+  },
+  "homepage": "https://github.com/batou9150/nanobanana-skill",
+  "repository": "https://github.com/batou9150/nanobanana-skill",
+  "license": "MIT",
+  "keywords": ["image-generation", "gemini", "nano-banana", "ai", "google"]
+}

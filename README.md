@@ -4,19 +4,33 @@ A [Claude Agent Skill](https://github.com/anthropics/skills) for image generatio
 
 When you ask Claude things like *"generate a watercolor of a fox"*, *"make a favicon for my app"*, *"edit this photo to add sunglasses"*, or *"draw an architecture diagram for a microservices system"*, this skill activates and runs the appropriate Gemini image model. Default: `gemini-3.1-flash-image-preview` (Nano Banana 2).
 
-## Install
+The repo is also a self-contained Claude Code **plugin marketplace** — install with two commands (no venv, no `pip install`).
+
+## Install (recommended — as a plugin)
+
+In Claude Code:
+
+```text
+/plugin marketplace add batou9150/nanobanana-skill
+/plugin install nanobanana@batou9150-skills
+```
+
+Then set the API key (see [API key — where to put it](#api-key--where-to-put-it)) and you're done.
+
+The CLI is self-contained: it uses a PEP 723 inline-metadata shebang to auto-install `google-genai` on first run via [`uv`](https://docs.astral.sh/uv/). No manual venv or `pip install` step.
+
+### Requirements
+
+- [`uv`](https://docs.astral.sh/uv/getting-started/installation/) on `PATH` (one-line install: `curl -LsSf https://astral.sh/uv/install.sh | sh`)
+- A Gemini API key
+
+## Install (alternative — bare skill, no plugin system)
 
 ```bash
 git clone https://github.com/batou9150/nanobanana-skill ~/.claude/skills/nanobanana
-
-# Create an isolated venv for the skill (avoids PEP 668 / Homebrew conflicts).
-# Requires `uv` (https://docs.astral.sh/uv/) — or replace with `python3 -m venv` + pip.
-uv venv ~/.claude/skills/nanobanana/.venv
-uv pip install --python ~/.claude/skills/nanobanana/.venv/bin/python \
-  -r ~/.claude/skills/nanobanana/requirements.txt
 ```
 
-Then **set the API key** (see next section), and restart Claude Code (or reload skills).
+That's it. The first time the script runs, `uv` resolves and caches `google-genai` automatically.
 
 ## API key — where to put it
 
@@ -66,22 +80,22 @@ If you already have a Gemini key set under another name, the skill picks the fir
 | `story` | Sequential frames (story / process / tutorial / timeline) |
 | `diagram` | Flowchart, architecture, schema, wireframe |
 
-Run any subcommand with `--help` to see flags:
-
-```bash
-~/.claude/skills/nanobanana/.venv/bin/python ~/.claude/skills/nanobanana/scripts/nanobanana.py generate --help
-```
-
 ## Direct CLI use (without Claude)
 
-The CLI works standalone:
+The script is fully standalone:
 
 ```bash
-~/.claude/skills/nanobanana/.venv/bin/python ~/.claude/skills/nanobanana/scripts/nanobanana.py generate \
+~/.claude/skills/nanobanana/scripts/nanobanana.py generate \
   "sunset over mountains" --count=3 --styles=watercolor,oil-painting
 ```
 
 Output goes to `./nanobanana-output/` in your cwd.
+
+Run any subcommand with `--help` to see flags:
+
+```bash
+~/.claude/skills/nanobanana/scripts/nanobanana.py generate --help
+```
 
 ## Model override
 
@@ -92,7 +106,7 @@ export NANOBANANA_MODEL=gemini-2.5-flash-image       # Nano Banana v1
 
 ## Credit
 
-Adapted from the official [`gemini-cli-extensions/nanobanana`](https://github.com/gemini-cli-extensions/nanobanana) Gemini CLI extension. This is a Claude-Skill port — no MCP server, no Node runtime, just a Python CLI invoked from `SKILL.md`.
+Adapted from the official [`gemini-cli-extensions/nanobanana`](https://github.com/gemini-cli-extensions/nanobanana) Gemini CLI extension. This is a Claude-Skill port — no MCP server, no Node runtime, just a self-contained Python script invoked from `SKILL.md`.
 
 ## License
 
