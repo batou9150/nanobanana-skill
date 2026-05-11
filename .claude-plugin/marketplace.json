@@ -8,8 +8,8 @@
     {
       "name": "nanobanana",
       "source": "./",
-      "description": "Default image-generation skill: pictures, icons, favicons, logos, banners, thumbnails, wallpapers, mockups, wireframes, diagrams, patterns, illustrations, photo edits, and restorations — via Google's Nano Banana (Gemini image models).",
-      "version": "0.2.0"
+      "description": "Default image-generation skill. TRIGGER when the user asks for an image, picture, icon, favicon, logo, banner, thumbnail, wallpaper, poster, mockup, wireframe, illustration, pattern, texture, or diagram — or asks to edit/restore/upscale/colorize an existing image. Activates even when Gemini or Nano Banana isn't named. Powered by Google's Gemini image models.",
+      "version": "0.2.1"
     }
   ]
 }
