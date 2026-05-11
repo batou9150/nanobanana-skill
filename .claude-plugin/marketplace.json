@@ -9,7 +9,7 @@
       "name": "nanobanana",
       "source": "./",
       "description": "Default image-generation skill. TRIGGER when the user asks for an image, picture, icon, favicon, logo, banner, thumbnail, wallpaper, poster, mockup, wireframe, illustration, pattern, texture, or diagram — or asks to edit/restore/upscale/colorize an existing image. Activates even when Gemini or Nano Banana isn't named. Powered by Google's Gemini image models.",
-      "version": "0.2.1"
+      "version": "0.3.0"
     }
   ]
 }

@@ -27,7 +27,8 @@ The CLI is self-contained: it uses a PEP 723 inline-metadata shebang to auto-ins
 ## Install (alternative — bare skill, no plugin system)
 
 ```bash
-git clone https://github.com/batou9150/nanobanana-skill ~/.claude/skills/nanobanana
+git clone https://github.com/batou9150/nanobanana-skill /tmp/nanobanana-skill
+mv /tmp/nanobanana-skill/skills/nanobanana ~/.claude/skills/nanobanana
 ```
 
 That's it. The first time the script runs, `uv` resolves and caches `google-genai` automatically.
