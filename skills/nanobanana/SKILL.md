@@ -8,7 +8,7 @@ license: Complete terms in LICENSE
 
 **When this skill is loaded, the user wants an image file, not a description.** Always run the CLI and return the saved file path(s). Do not substitute prose, ASCII art, or markdown placeholders. Do not refuse because you're unsure which subcommand fits — pick the closest match below and run it.
 
-Image generation, editing, and restoration via Google's Gemini image models. Default model: `gemini-3.1-flash-image-preview` (Nano Banana 2). The skill wraps a single self-contained Python CLI at `scripts/nanobanana.py` — it uses a PEP 723 inline-metadata shebang (`uv run --script`) to auto-install `google-genai` on first invocation, so no venv setup is needed.
+Image generation, editing, and restoration via Google's Gemini image models. Default model: `gemini-3.1-flash-image` (Nano Banana 2). The skill wraps a single self-contained Python CLI at `scripts/nanobanana.py` — it uses a PEP 723 inline-metadata shebang (`uv run --script`) to auto-install `google-genai` on first invocation, so no venv setup is needed.
 
 ## Prerequisites
 

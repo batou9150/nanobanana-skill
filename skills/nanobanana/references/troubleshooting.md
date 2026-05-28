@@ -14,10 +14,10 @@ Get a key at <https://aistudio.google.com/apikey>.
 
 ## Model selection
 
-Default: `gemini-3.1-flash-image-preview` (Nano Banana 2). Override:
+Default: `gemini-3.1-flash-image` (Nano Banana 2). Override:
 
 ```bash
-export NANOBANANA_MODEL=gemini-3-pro-image-preview   # Nano Banana Pro
+export NANOBANANA_MODEL=gemini-3-pro-image   # Nano Banana Pro
 export NANOBANANA_MODEL=gemini-2.5-flash-image       # Nano Banana v1
 ```
 

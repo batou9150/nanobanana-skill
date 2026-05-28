@@ -24,7 +24,7 @@ from pathlib import Path
 from google import genai
 from google.genai import types
 
-DEFAULT_MODEL = "gemini-3.1-flash-image-preview"
+DEFAULT_MODEL = "gemini-3.1-flash-image"
 OUTPUT_DIR = Path("nanobanana-output")
 API_KEY_VARS = (
     "NANOBANANA_API_KEY",
