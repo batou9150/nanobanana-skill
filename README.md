@@ -6,6 +6,17 @@ When you ask Claude things like *"generate a watercolor of a fox"*, *"make a fav
 
 The repo is also a self-contained Claude Code **plugin marketplace** — install with two commands (no venv, no `pip install`).
 
+## Plugins in this marketplace
+
+The `batou9150-skills` marketplace serves two plugins:
+
+| Plugin | What it does | Install |
+|---|---|---|
+| `nanobanana` (this repo) | Image generation, editing and restoration with Gemini image models | `/plugin install nanobanana@batou9150-skills` |
+| [`mcp-posture`](https://github.com/batou9150/mcp-posture) | Security review of remote MCP servers: OAuth posture, transport, tool poisoning and rug pulls, with remediation | `/plugin install mcp-posture@batou9150-skills` |
+
+Add the marketplace once with `/plugin marketplace add batou9150/nanobanana-skill`.
+
 ## Install (recommended — as a plugin)
 
 In Claude Code:

@@ -10,6 +10,15 @@
       "source": "./",
       "description": "Default image-generation skill. TRIGGER when the user asks for an image, picture, icon, favicon, logo, banner, thumbnail, wallpaper, poster, mockup, wireframe, illustration, pattern, texture, or diagram — or asks to edit/restore/upscale/colorize an existing image. Activates even when Gemini or Nano Banana isn't named. Powered by Google's Gemini image models.",
       "version": "0.4.0"
+    },
+    {
+      "name": "mcp-posture",
+      "source": {
+        "source": "github",
+        "repo": "batou9150/mcp-posture"
+      },
+      "description": "Security review of remote MCP servers. TRIGGER when the user asks to audit, scan, review or harden an MCP server, its OAuth setup, its tools (poisoning, hidden instructions, rug pulls) or a Client ID Metadata Document. Runs the mcp-posture scanner, then adds a semantic review and remediation.",
+      "version": "0.1.0"
     }
   ]
 }
