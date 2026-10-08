@@ -2,7 +2,7 @@
 
 A [Claude Agent Skill](https://github.com/anthropics/skills) for image generation, editing, and restoration via Google's Nano Banana (Gemini image models).
 
-When you ask Claude things like *"generate a watercolor of a fox"*, *"make a favicon for my app"*, *"edit this photo to add sunglasses"*, or *"draw an architecture diagram for a microservices system"*, this skill activates and runs the appropriate Gemini image model. Default: `gemini-3.1-flash-image` (Nano Banana 2).
+When you ask Claude things like *"generate a watercolor of a fox"*, *"make a favicon for my app"*, *"edit this photo to add sunglasses"*, or *"draw an architecture diagram for a microservices system"*, this skill activates and runs the appropriate Gemini image model. Default: `gemini-nano-banana-2.1` (Nano Banana 2.1).
 
 The repo is also a self-contained Claude Code **plugin marketplace** — install with two commands (no venv, no `pip install`).
 
@@ -102,6 +102,7 @@ Run any subcommand with `--help` to see flags:
 
 ```bash
 export NANOBANANA_MODEL=gemini-3-pro-image   # Nano Banana Pro
+export NANOBANANA_MODEL=gemini-3.1-flash-image       # Nano Banana 2
 export NANOBANANA_MODEL=gemini-2.5-flash-image       # Nano Banana v1
 ```
 

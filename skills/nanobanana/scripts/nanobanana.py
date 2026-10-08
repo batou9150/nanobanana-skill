@@ -24,7 +24,7 @@ from pathlib import Path
 from google import genai
 from google.genai import types
 
-DEFAULT_MODEL = "gemini-3.1-flash-image"
+DEFAULT_MODEL = "gemini-nano-banana-2.1"
 OUTPUT_DIR = Path("nanobanana-output")
 API_KEY_VARS = (
     "NANOBANANA_API_KEY",
@@ -46,6 +46,7 @@ ASPECT_RATIOS = (
     "4:5", "5:4", "8:1", "9:16", "16:9", "21:9",
 )
 RESOLUTIONS = ("512", "1K", "2K", "4K")
+THINKING_LEVELS = ("minimal", "medium", "high")
 
 VARIATION_SUFFIXES = {
     "lighting": ["dramatic lighting", "soft lighting"],
@@ -168,10 +169,12 @@ def save_image(data: bytes, base: str, ext: str = "png") -> Path:
 def build_image_config(args) -> types.GenerateContentConfig | None:
     aspect = getattr(args, "aspect_ratio", None)
     resolution = getattr(args, "resolution", None)
-    if not aspect and not resolution:
+    thinking = getattr(args, "thinking", None)
+    if not aspect and not resolution and not thinking:
         return None
     return types.GenerateContentConfig(
-        image_config=types.ImageConfig(aspect_ratio=aspect, image_size=resolution)
+        image_config=types.ImageConfig(aspect_ratio=aspect, image_size=resolution),
+        thinking_config=types.ThinkingConfig(thinking_level=thinking) if thinking else None,
     )
 
 
@@ -415,6 +418,11 @@ def add_image_config_args(parser: argparse.ArgumentParser) -> None:
         choices=RESOLUTIONS,
         default="2K",
         help="Output resolution: 512, 1K, 2K, 4K (default: 2K).",
+    )
+    parser.add_argument(
+        "--thinking",
+        choices=THINKING_LEVELS,
+        help="Thinking level: minimal, medium, high (default: model's own, medium on gemini-nano-banana-2.1).",
     )
 
 

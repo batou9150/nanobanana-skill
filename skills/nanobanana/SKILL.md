@@ -8,7 +8,7 @@ license: Complete terms in LICENSE
 
 **When this skill is loaded, the user wants an image file, not a description.** Always run the CLI and return the saved file path(s). Do not substitute prose, ASCII art, or markdown placeholders. Do not refuse because you're unsure which subcommand fits — pick the closest match below and run it.
 
-Image generation, editing, and restoration via Google's Gemini image models. Default model: `gemini-3.1-flash-image` (Nano Banana 2). The skill wraps a single self-contained Python CLI at `scripts/nanobanana.py` — it uses a PEP 723 inline-metadata shebang (`uv run --script`) to auto-install `google-genai` on first invocation, so no venv setup is needed.
+Image generation, editing, and restoration via Google's Gemini image models. Default model: `gemini-nano-banana-2.1` (Nano Banana 2.1). The skill wraps a single self-contained Python CLI at `scripts/nanobanana.py` — it uses a PEP 723 inline-metadata shebang (`uv run --script`) to auto-install `google-genai` on first invocation, so no venv setup is needed.
 
 ## Prerequisites
 
@@ -41,12 +41,13 @@ The script is executable. Invoke directly via Bash, using the absolute path unde
 
 Output is saved to `./nanobanana-output/` in the user's cwd. The CLI prints the saved file paths to stdout — relay those back to the user.
 
-## Aspect ratio & resolution
+## Aspect ratio, resolution & thinking
 
-Every subcommand accepts `--aspect-ratio` and `--resolution`. Defaults are `16:9` and `2K`. Override whenever the user signals a different shape ("portrait", "square", "wallpaper", "9:16") or quality target ("4K", "low-res").
+Every subcommand accepts `--aspect-ratio`, `--resolution` and `--thinking`. Defaults are `16:9` and `2K`. Override whenever the user signals a different shape ("portrait", "square", "wallpaper", "9:16") or quality target ("4K", "low-res").
 
 - `--aspect-ratio` (default `16:9`): `1:1`, `1:4`, `1:8`, `2:3`, `3:2`, `3:4`, `4:1`, `4:3`, `4:5`, `5:4`, `8:1`, `9:16`, `16:9`, `21:9`
-- `--resolution` (default `2K`): `512`, `1K`, `2K`, `4K`
+- `--resolution` (default `2K`): `512`, `1K`, `2K`, `4K` — `512` is only supported by `gemini-3.1-flash-image`; the default `gemini-nano-banana-2.1` accepts `1K`, `2K`, `4K`
+- `--thinking` (default: unset, so the model uses its own level, `medium` on `gemini-nano-banana-2.1`): `minimal`, `medium`, `high`. Use `high` for dense text, infographics or complex multi-reference compositions; use `minimal` for quick drafts.
 
 Example: `generate "city skyline at night" --aspect-ratio=21:9 --resolution=4K`.
 
