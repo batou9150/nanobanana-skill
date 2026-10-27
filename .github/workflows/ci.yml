@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  SCRIPT: skills/nanobanana/scripts/nanobanana.py
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.2
+      - run: uvx ruff check
+      - run: uvx ruff format --check
+      - name: Plugin manifests are valid and agree on the version
+        run: |
+          plugin=$(jq -er .version .claude-plugin/plugin.json)
+          market=$(jq -er '.plugins[] | select(.name == "nanobanana") | .version' .claude-plugin/marketplace.json)
+          echo "plugin.json=$plugin marketplace.json=$market"
+          test "$plugin" = "$market"
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: CLI starts and every subcommand parses
+        run: |
+          uv run --script "$SCRIPT" --help
+          for cmd in generate edit restore icon pattern story diagram; do
+            uv run --script "$SCRIPT" "$cmd" --help > /dev/null
+          done
+      - run: uv run --no-project --with-requirements "$SCRIPT" --with 'pytest>=9' pytest
+
+  # Installs the oldest google-genai the script header allows, so a minimum
+  # that's too low for the APIs the script uses fails here.
+  lowest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.2
+        with:
+          python-version: "3.11"
+      - run: uv run --no-project --resolution lowest-direct --with-requirements "$SCRIPT" --with 'pytest>=9' pytest

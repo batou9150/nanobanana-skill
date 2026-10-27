@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script --quiet
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["google-genai>=1.0.0"]
+# dependencies = ["google-genai>=1.51.0,<3"]
 # ///
 """nanobanana: Gemini image-generation CLI for the Claude Agent Skill.
 
@@ -11,6 +11,7 @@ Self-contained via PEP 723 inline metadata: `uv run` reads the header above
 and provisions a cached ephemeral environment with `google-genai` on first
 invocation. No manual venv / pip install required.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -42,8 +43,20 @@ SEARCH_DIRS = [
     Path.home() / "Desktop",
 ]
 ASPECT_RATIOS = (
-    "1:1", "1:4", "1:8", "2:3", "3:2", "3:4", "4:1", "4:3",
-    "4:5", "5:4", "8:1", "9:16", "16:9", "21:9",
+    "1:1",
+    "1:4",
+    "1:8",
+    "2:3",
+    "3:2",
+    "3:4",
+    "4:1",
+    "4:3",
+    "4:5",
+    "5:4",
+    "8:1",
+    "9:16",
+    "16:9",
+    "21:9",
 )
 RESOLUTIONS = ("512", "1K", "2K", "4K")
 THINKING_LEVELS = ("minimal", "medium", "high")
@@ -80,7 +93,7 @@ def model_name() -> str:
 
 
 def slugify(text: str) -> str:
-    s = re.sub(r"[^a-z0-9\s]", "", text.lower())
+    s = re.sub(r"[^a-z0-9_\s]", "", text.lower())
     s = re.sub(r"\s+", "_", s).strip("_")[:32]
     return s or "generated_image"
 
@@ -174,7 +187,9 @@ def build_image_config(args) -> types.GenerateContentConfig | None:
         return None
     return types.GenerateContentConfig(
         image_config=types.ImageConfig(aspect_ratio=aspect, image_size=resolution),
-        thinking_config=types.ThinkingConfig(thinking_level=thinking) if thinking else None,
+        thinking_config=types.ThinkingConfig(thinking_level=thinking)
+        if thinking
+        else None,
     )
 
 
@@ -369,17 +384,19 @@ def cmd_story(args):
 
 
 def build_diagram_prompt(args) -> str:
-    return ", ".join([
-        args.prompt,
-        f"{args.type} diagram",
-        f"{args.style} style",
-        f"{args.layout} layout",
-        f"{args.complexity} level of detail",
-        f"{args.colors} color scheme",
-        f"{args.annotations} annotations and labels",
-        "clean technical illustration",
-        "clear visual hierarchy",
-    ])
+    return ", ".join(
+        [
+            args.prompt,
+            f"{args.type} diagram",
+            f"{args.style} style",
+            f"{args.layout} layout",
+            f"{args.complexity} level of detail",
+            f"{args.colors} color scheme",
+            f"{args.annotations} annotations and labels",
+            "clean technical illustration",
+            "clear visual hierarchy",
+        ]
+    )
 
 
 def cmd_diagram(args):
@@ -427,14 +444,24 @@ def add_image_config_args(parser: argparse.ArgumentParser) -> None:
 
 
 def main():
-    p = argparse.ArgumentParser(prog="nanobanana", description="Gemini image-generation CLI.")
+    p = argparse.ArgumentParser(
+        prog="nanobanana", description="Gemini image-generation CLI."
+    )
     sub = p.add_subparsers(dest="cmd", required=True)
 
     g = sub.add_parser("generate", help="Text-to-image (single or batched)")
     g.add_argument("prompt")
     g.add_argument("--count", type=int, default=1)
-    g.add_argument("--styles", type=csv_str, help="Comma-separated: photorealistic,watercolor,oil-painting,sketch,pixel-art,anime,vintage,modern,abstract,minimalist")
-    g.add_argument("--variations", type=csv_str, help="Comma-separated: lighting,angle,color-palette,composition,mood,season,time-of-day")
+    g.add_argument(
+        "--styles",
+        type=csv_str,
+        help="Comma-separated: photorealistic,watercolor,oil-painting,sketch,pixel-art,anime,vintage,modern,abstract,minimalist",
+    )
+    g.add_argument(
+        "--variations",
+        type=csv_str,
+        help="Comma-separated: lighting,angle,color-palette,composition,mood,season,time-of-day",
+    )
     g.add_argument("--seed", type=int)
     g.add_argument("--preview", action="store_true")
     add_image_config_args(g)
@@ -457,8 +484,14 @@ def main():
     ic = sub.add_parser("icon", help="App icon, favicon, UI element")
     ic.add_argument("prompt")
     ic.add_argument("--sizes", type=csv_int, help="e.g. 16,32,64,128,256,512,1024")
-    ic.add_argument("--type", choices=["app-icon", "favicon", "ui-element"], default="app-icon")
-    ic.add_argument("--style", choices=["flat", "skeuomorphic", "minimal", "modern"], default="modern")
+    ic.add_argument(
+        "--type", choices=["app-icon", "favicon", "ui-element"], default="app-icon"
+    )
+    ic.add_argument(
+        "--style",
+        choices=["flat", "skeuomorphic", "minimal", "modern"],
+        default="modern",
+    )
     ic.add_argument("--format", choices=["png", "jpeg"], default="png")
     ic.add_argument("--background", default="transparent")
     ic.add_argument("--corners", choices=["rounded", "sharp"], default="rounded")
@@ -469,33 +502,80 @@ def main():
     pa = sub.add_parser("pattern", help="Seamless pattern / texture")
     pa.add_argument("prompt")
     pa.add_argument("--size", default="256x256")
-    pa.add_argument("--type", choices=["seamless", "texture", "wallpaper"], default="seamless")
-    pa.add_argument("--style", choices=["geometric", "organic", "abstract", "floral", "tech"], default="abstract")
-    pa.add_argument("--density", choices=["sparse", "medium", "dense"], default="medium")
-    pa.add_argument("--colors", choices=["mono", "duotone", "colorful"], default="colorful")
+    pa.add_argument(
+        "--type", choices=["seamless", "texture", "wallpaper"], default="seamless"
+    )
+    pa.add_argument(
+        "--style",
+        choices=["geometric", "organic", "abstract", "floral", "tech"],
+        default="abstract",
+    )
+    pa.add_argument(
+        "--density", choices=["sparse", "medium", "dense"], default="medium"
+    )
+    pa.add_argument(
+        "--colors", choices=["mono", "duotone", "colorful"], default="colorful"
+    )
     pa.add_argument("--repeat", choices=["tile", "mirror"], default="tile")
     pa.add_argument("--preview", action="store_true")
     add_image_config_args(pa)
     pa.set_defaults(func=cmd_pattern)
 
-    st = sub.add_parser("story", help="Sequential image story / process / tutorial / timeline")
+    st = sub.add_parser(
+        "story", help="Sequential image story / process / tutorial / timeline"
+    )
     st.add_argument("prompt")
     st.add_argument("--steps", type=int, default=4)
-    st.add_argument("--type", choices=["story", "process", "tutorial", "timeline"], default="story")
+    st.add_argument(
+        "--type", choices=["story", "process", "tutorial", "timeline"], default="story"
+    )
     st.add_argument("--style", choices=["consistent", "evolving"], default="consistent")
-    st.add_argument("--transition", choices=["smooth", "dramatic", "fade"], default="smooth")
+    st.add_argument(
+        "--transition", choices=["smooth", "dramatic", "fade"], default="smooth"
+    )
     st.add_argument("--preview", action="store_true")
     add_image_config_args(st)
     st.set_defaults(func=cmd_story)
 
-    di = sub.add_parser("diagram", help="Flowchart / architecture / network / database / wireframe / mindmap / sequence")
+    di = sub.add_parser(
+        "diagram",
+        help="Flowchart / architecture / network / database / wireframe / mindmap / sequence",
+    )
     di.add_argument("prompt")
-    di.add_argument("--type", choices=["flowchart", "architecture", "network", "database", "wireframe", "mindmap", "sequence"], default="flowchart")
-    di.add_argument("--style", choices=["professional", "clean", "hand-drawn", "technical"], default="professional")
-    di.add_argument("--layout", choices=["horizontal", "vertical", "hierarchical", "circular"], default="hierarchical")
-    di.add_argument("--complexity", choices=["simple", "detailed", "comprehensive"], default="detailed")
-    di.add_argument("--colors", choices=["mono", "accent", "categorical"], default="accent")
-    di.add_argument("--annotations", choices=["minimal", "detailed"], default="detailed")
+    di.add_argument(
+        "--type",
+        choices=[
+            "flowchart",
+            "architecture",
+            "network",
+            "database",
+            "wireframe",
+            "mindmap",
+            "sequence",
+        ],
+        default="flowchart",
+    )
+    di.add_argument(
+        "--style",
+        choices=["professional", "clean", "hand-drawn", "technical"],
+        default="professional",
+    )
+    di.add_argument(
+        "--layout",
+        choices=["horizontal", "vertical", "hierarchical", "circular"],
+        default="hierarchical",
+    )
+    di.add_argument(
+        "--complexity",
+        choices=["simple", "detailed", "comprehensive"],
+        default="detailed",
+    )
+    di.add_argument(
+        "--colors", choices=["mono", "accent", "categorical"], default="accent"
+    )
+    di.add_argument(
+        "--annotations", choices=["minimal", "detailed"], default="detailed"
+    )
     di.add_argument("--preview", action="store_true")
     add_image_config_args(di)
     di.set_defaults(func=cmd_diagram)
