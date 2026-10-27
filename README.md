@@ -106,6 +106,17 @@ export NANOBANANA_MODEL=gemini-3.1-flash-image       # Nano Banana 2
 export NANOBANANA_MODEL=gemini-2.5-flash-image       # Nano Banana v1
 ```
 
+## Development
+
+CI runs on every push and pull request. To run the same checks locally:
+
+```bash
+uvx ruff check && uvx ruff format --check
+uv run --no-project --with-requirements skills/nanobanana/scripts/nanobanana.py --with 'pytest>=9' pytest
+```
+
+The tests use a fake Gemini client, so they need no API key and make no network calls.
+
 ## Credit
 
 Adapted from the official [`gemini-cli-extensions/nanobanana`](https://github.com/gemini-cli-extensions/nanobanana) Gemini CLI extension. This is a Claude-Skill port — no MCP server, no Node runtime, just a self-contained Python script invoked from `SKILL.md`.
