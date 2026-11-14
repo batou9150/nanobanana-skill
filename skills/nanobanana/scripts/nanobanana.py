@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script --quiet
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["google-genai>=1.51.0,<3"]
+# dependencies = ["google-genai>=1.51.0,<4"]
 # ///
 """nanobanana: Gemini image-generation CLI for the Claude Agent Skill.
 
